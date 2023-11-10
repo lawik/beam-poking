@@ -1,0 +1,9 @@
+#!/usr/bin/env elixir
+
+[file, outfile] = System.argv()
+IO.puts("Compiling file '#{file}'")
+[{module, bytecode}] = Code.compile_file(file)
+IO.puts("Compiled module #{module}")
+
+IO.puts("Writing file '#{outfile}'")
+File.write!(outfile, bytecode)

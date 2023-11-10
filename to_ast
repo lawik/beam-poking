@@ -1,0 +1,13 @@
+#!/usr/bin/env elixir
+
+[file, outfile] = System.argv()
+IO.puts("Compiling file to AST '#{file}'")
+content = File.read!(file)
+quoted = Code.string_to_quoted!(content)
+string =
+  quoted
+  |> inspect()
+  |> Code.format_string!()
+
+IO.puts("Writing file '#{outfile}'")
+File.write!(outfile, string)
