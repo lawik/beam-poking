@@ -3,11 +3,7 @@
 [file, outfile] = System.argv()
 IO.puts("Compiling file to AST '#{file}'")
 content = File.read!(file)
-#quoted = Code.string_to_quoted!(content, [
-#  literal_encoder: &{:ok, {:__block__, &2, [&1]}},
-#  token_metadata: true,
-#  unescape: false
-#])
+
 quoted = Code.string_to_quoted!(content)
 
 expanded = Macro.prewalk(quoted, fn part ->
@@ -16,14 +12,15 @@ expanded = Macro.prewalk(quoted, fn part ->
     # Do not expand defmodule
     {:defmodule, _, _} -> part
     {:def, _, _} -> part
+    {:defp, _, _} -> part
+    {:defmacro, _, _} -> part
+    {:defmacrop, _, _} -> part
     other -> Macro.expand(other, __ENV__)
   end
 
 end)
-#expanded = Macro.expand(quoted, __ENV__)
 
 code = Macro.to_string(expanded)
-#code = Macro.to_string(quoted)
 
 IO.puts("Writing file '#{outfile}'")
 File.write!(outfile, code)
